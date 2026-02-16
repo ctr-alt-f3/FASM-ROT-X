@@ -63,12 +63,12 @@ mov r8b, byte[rsi+rdi]
 add r8b, al
 mov byte[rsi+rdi],r8b
 cmp rdi, rdx
-jae .nastepne
+jae .naxt
 inc rdi
 jmp .loop1
 
 
-.nastepne:           ;r9 = ROT_user_int  rsi = string_addr rdx = str_len 
+.naxt:           ;r9 = ROT_user_int  rsi = string_addr rdx = str_len 
 mov rax, 1
 mov rdi, 1
 syscall
