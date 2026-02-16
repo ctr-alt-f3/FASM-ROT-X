@@ -40,7 +40,7 @@ jb .dalej
 cmp byte[r9+rdi],'9'
 ja .dalej
 
-add bl, byte[r9+rdi]
+mov bl, byte[r9+rdi]
 
 sub bl, '0'
 imul rax, 10
