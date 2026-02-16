@@ -1,0 +1,87 @@
+macro wyjdz code
+{
+mov rax, 60
+mov rdi, code
+syscall
+}
+
+
+format ELF64 executable 3
+include 'include/macro/proc64.inc'
+entry start
+
+;proc str_to_int strng
+;	enter
+;	local s:
+
+start:
+pop rsi
+pop rsi
+pop rsi
+pop r9
+xor rdx,rdx
+.wylicz:
+cmp byte[rsi+rdx],0
+je .convert_start
+inc rdx
+jmp .wylicz ; rdx = len_str   rsi = string_addr     r9 = ROT_user_str
+
+.convert_start:
+;push rdx
+;push rsi
+;push r9 ;zapisz wszystko
+
+;teraz zamieniam z str na int
+
+xor rax, rax 			;al = bufor
+xor rdi, rdi           ; rdi = counter
+xor rbx, rbx
+.loop:
+cmp byte[r9+rdi], '0'
+jb .dalej
+cmp byte[r9+rdi],'9'
+ja .dalej
+
+add bl, byte[r9+rdi]
+sub bl, '0'
+imul rax, 10
+add rax, rbx
+;xor rdi, rdi
+inc rdi
+jmp .loop
+
+.dalej: ;teraz już jest intem, rax to int z r9
+;mov r9, rax
+
+ ;al = ROT_user_int  rsi = string_addr rdx = str_len r9 - bufor
+
+;teraz encode stringa
+xor rdi, rdi       ;rdi - counter
+xor r8b, r8b		   ;r9b - buffor
+.loop1:
+mov r8b, byte[rsi+rdi]
+add r8b, al
+mov byte[rsi+rdi],r8b
+cmp rdi, rdx
+jae .nastepne
+inc rdi
+jmp .loop1
+
+
+.nastepne:           ;r9 = ROT_user_int  rsi = string_addr rdx = str_len 
+mov rax, 1
+mov rdi, 1
+syscall
+mov rax, 1
+mov rdi, 1
+mov rsi, nl
+mov rdx, 1
+syscall
+wyjdz 4
+
+
+
+segment readable writable
+nl db 10
+
+
